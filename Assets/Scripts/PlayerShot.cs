@@ -1,5 +1,6 @@
 using UnityEngine;
-
+using UnityEngine.InputSystem;
+    
 /// <summary>
 /// Controlador de disparo del jugador usando Object Pooling
 /// </summary>
@@ -107,8 +108,10 @@ public class PlayerShot : MonoBehaviour
         Projectile projectile = projectileObj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            projectile.Initialize(firePoint.forward, projectilePool);
+            // Primero ajustar la velocidad para que Initialize use el valor correcto
             projectile.SetSpeed(projectileSpeed);
+            // Luego aplicar la velocidad inicial; Initialize se encargará de desprender del parent
+            projectile.Initialize(firePoint.forward, projectilePool);
         }
         else
         {

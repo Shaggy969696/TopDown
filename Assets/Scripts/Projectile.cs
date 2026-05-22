@@ -26,7 +26,7 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        // Auto-retornar al pool despu�s del tiempo de vida
+        // Auto-retornar al pool después del tiempo de vida
         if (Time.time - spawnTime >= lifetime)
         {
             ReturnToPool();
@@ -34,12 +34,21 @@ public class Projectile : MonoBehaviour
     }
 
     /// <summary>
-    /// Inicializa el proyectil con direcci�n y referencia al pool
+    /// Inicializa el proyectil con dirección y referencia al pool
     /// </summary>
     public void Initialize(Vector3 direction, ObjectPool pool)
     {
         parentPool = pool;
+
+        // Desprenderse del pool para que el proyectil sea independiente del transform del pool/player
+        transform.SetParent(null);
+
+        // Asegurar tiempo de spawn y aplicar velocidad inicial una sola vez
+        spawnTime = Time.time;
+
+        // Usar la propiedad correcta de Rigidbody y resetear velocidades angulares
         rb.linearVelocity = direction.normalized * speed;
+        rb.angularVelocity = Vector3.zero;
     }
 
     /// <summary>
@@ -73,12 +82,12 @@ public class Projectile : MonoBehaviour
 
         if (hitObject.CompareTag("Enemy"))
         {
-            Debug.Log($"[PROYECTIL] Impact� enemigo: {hitObject.name}");
-            // Aqu� puedes agregar l�gica de da�o: hitObject.GetComponent<Enemy>()?.TakeDamage(damage);
+            Debug.Log($"[PROYECTIL] Impactó enemigo: {hitObject.name}");
+            // Aquí puedes agregar lógica de daño: hitObject.GetComponent<Enemy>()?.TakeDamage(damage);
         }
         else
         {
-            Debug.Log($"[PROYECTIL] Colision� con: {hitObject.name}");
+            Debug.Log($"[PROYECTIL] Colisionó con: {hitObject.name}");
         }
 
         ReturnToPool();
@@ -93,6 +102,9 @@ public class Projectile : MonoBehaviour
         {
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
+
+            // Reparent al pool para mantener orden en la jerarquía
+            transform.SetParent(parentPool.transform);
             parentPool.ReturnObject(gameObject);
         }
         else
