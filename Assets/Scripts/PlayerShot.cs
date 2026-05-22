@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-    
+
 /// <summary>
 /// Controlador de disparo del jugador usando Object Pooling
 /// </summary>
@@ -17,6 +17,7 @@ public class PlayerShot : MonoBehaviour
 
     private ObjectPool projectilePool;
     private float nextFireTime = 0f;
+    private bool isFiring = false;
 
     private void Start()
     {
@@ -26,7 +27,57 @@ public class PlayerShot : MonoBehaviour
 
     private void Update()
     {
-        HandleShootInput();
+        if (isFiring && Time.time >= nextFireTime)
+        {
+            Fire();
+            nextFireTime = Time.time + fireRate;
+        }
+    }
+
+    /// <summary>
+    /// Llamado por el componente Player Input al realizar la acción de disparo.
+    /// Configura el disparo continuo mientras se mantiene el botón pulsado.
+    /// </summary>
+    public void OnFire(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            isFiring = true;
+        }
+        else if (context.canceled)
+        {
+            isFiring = false;
+        }
+    }
+
+    /// <summary>
+    /// Dispara un proyectil desde el firePoint
+    /// </summary>
+    private void Fire()
+    {
+        if (firePoint == null || projectilePool == null) return;
+
+        GameObject projectileObj = projectilePool.GetObject();
+
+        if (projectileObj == null)
+        {
+            Debug.LogError("[PlayerShot] No se pudo obtener proyectil del pool.");
+            return;
+        }
+
+        projectileObj.transform.position = firePoint.position;
+        projectileObj.transform.rotation = firePoint.rotation;
+
+        Projectile projectile = projectileObj.GetComponent<Projectile>();
+        if (projectile != null)
+        {
+            projectile.SetSpeed(projectileSpeed);
+            projectile.Initialize(firePoint.forward, projectilePool);
+        }
+        else
+        {
+            Debug.LogError("[PlayerShot] El objeto del pool no tiene componente Projectile!");
+        }
     }
 
     /// <summary>
@@ -36,10 +87,9 @@ public class PlayerShot : MonoBehaviour
     {
         GameObject poolObject = new GameObject("ProjectilePool");
         poolObject.transform.SetParent(transform);
-        
+
         projectilePool = poolObject.AddComponent<ObjectPool>();
-        
-        // Configurar el pool mediante reflection ya que los campos son privados
+
         var poolType = typeof(ObjectPool);
         poolType.GetField("prefab", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             ?.SetValue(projectilePool, projectilePrefab);
@@ -48,7 +98,6 @@ public class PlayerShot : MonoBehaviour
         poolType.GetField("autoExpand", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             ?.SetValue(projectilePool, true);
 
-        // Forzar inicialización
         poolType.GetMethod("Start", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             ?.Invoke(projectilePool, null);
     }
@@ -59,64 +108,12 @@ public class PlayerShot : MonoBehaviour
     private void ValidateReferences()
     {
         if (firePoint == null)
-        {
             Debug.LogError("[PlayerShot] FirePoint no asignado! Asigna el Transform desde donde dispararás.");
-        }
 
         if (projectilePrefab == null)
-        {
             Debug.LogError("[PlayerShot] Projectile Prefab no asignado! Asigna el prefab del proyectil.");
-        }
         else if (projectilePrefab.GetComponent<Projectile>() == null)
-        {
             Debug.LogError("[PlayerShot] El prefab del proyectil NO tiene el componente 'Projectile' adjunto!");
-        }
-    }
-
-    /// <summary>
-    /// Maneja el input del jugador para disparar
-    /// </summary>
-    private void HandleShootInput()
-    {
-        if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
-        {
-            Shoot();
-            nextFireTime = Time.time + fireRate;
-        }
-    }
-
-    /// <summary>
-    /// Dispara un proyectil desde el firePoint
-    /// </summary>
-    private void Shoot()
-    {
-        if (firePoint == null || projectilePool == null) return;
-
-        GameObject projectileObj = projectilePool.GetObject();
-        
-        if (projectileObj == null)
-        {
-            Debug.LogError("[PlayerShot] No se pudo obtener proyectil del pool.");
-            return;
-        }
-
-        // Posicionar el proyectil en el firePoint
-        projectileObj.transform.position = firePoint.position;
-        projectileObj.transform.rotation = firePoint.rotation;
-
-        // Inicializar el proyectil con dirección y pool
-        Projectile projectile = projectileObj.GetComponent<Projectile>();
-        if (projectile != null)
-        {
-            // Primero ajustar la velocidad para que Initialize use el valor correcto
-            projectile.SetSpeed(projectileSpeed);
-            // Luego aplicar la velocidad inicial; Initialize se encargará de desprender del parent
-            projectile.Initialize(firePoint.forward, projectilePool);
-        }
-        else
-        {
-            Debug.LogError("[PlayerShot] El objeto del pool no tiene componente Projectile!");
-        }
     }
 
     /// <summary>
@@ -126,8 +123,6 @@ public class PlayerShot : MonoBehaviour
     public void ShowPoolStatus()
     {
         if (projectilePool != null)
-        {
             projectilePool.LogPoolStatus();
-        }
     }
 }

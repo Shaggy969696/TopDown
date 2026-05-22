@@ -9,6 +9,7 @@ public class Projectile : MonoBehaviour
     [Header("Projectile Settings")]
     [SerializeField] private float speed = 20f;
     [SerializeField] private float lifetime = 5f;
+    [SerializeField] private float damage = 25f;
 
     private Rigidbody rb;
     private ObjectPool parentPool;
@@ -26,7 +27,6 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        // Auto-retornar al pool después del tiempo de vida
         if (Time.time - spawnTime >= lifetime)
         {
             ReturnToPool();
@@ -39,14 +39,8 @@ public class Projectile : MonoBehaviour
     public void Initialize(Vector3 direction, ObjectPool pool)
     {
         parentPool = pool;
-
-        // Desprenderse del pool para que el proyectil sea independiente del transform del pool/player
         transform.SetParent(null);
-
-        // Asegurar tiempo de spawn y aplicar velocidad inicial una sola vez
         spawnTime = Time.time;
-
-        // Usar la propiedad correcta de Rigidbody y resetear velocidades angulares
         rb.linearVelocity = direction.normalized * speed;
         rb.angularVelocity = Vector3.zero;
     }
@@ -74,20 +68,21 @@ public class Projectile : MonoBehaviour
     /// </summary>
     private void HandleCollision(GameObject hitObject)
     {
-        // Ignorar colisiones con objetos tagged como "Player" si viene del player
+        // Ignorar colisiones con el propio jugador
         if (hitObject.CompareTag("Player"))
-        {
             return;
-        }
 
-        if (hitObject.CompareTag("Enemy"))
+        // Buscar IDamageable subiendo por la jerarquía (el collider puede estar en un hijo)
+        IDamageable damageable = hitObject.GetComponentInParent<IDamageable>();
+
+        if (damageable != null)
         {
-            Debug.Log($"[PROYECTIL] Impactó enemigo: {hitObject.name}");
-            // Aquí puedes agregar lógica de daño: hitObject.GetComponent<Enemy>()?.TakeDamage(damage);
+            Debug.Log($"[PROYECTIL] Impactó: {hitObject.transform.root.name}");
+            damageable.TakeDamage(damage);
         }
         else
         {
-            Debug.Log($"[PROYECTIL] Colisionó con: {hitObject.name}");
+            Debug.Log($"[PROYECTIL] Colisionó con: {hitObject.name} (sin IDamageable)");
         }
 
         ReturnToPool();
@@ -102,8 +97,6 @@ public class Projectile : MonoBehaviour
         {
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
-
-            // Reparent al pool para mantener orden en la jerarquía
             transform.SetParent(parentPool.transform);
             parentPool.ReturnObject(gameObject);
         }
