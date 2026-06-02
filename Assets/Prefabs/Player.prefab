@@ -305,6 +305,7 @@ GameObject:
   - component: {fileID: 7059282412402850655}
   - component: {fileID: 3103928519508648514}
   - component: {fileID: 5832522170041709696}
+  - component: {fileID: 8564499973664967785}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -463,6 +464,7 @@ MonoBehaviour:
   jumpForce: 5
   gravity: -9.81
   rotationSpeed: 20
+  knockbackDecay: 8
 --- !u!114 &3103928519508648514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,3 +497,17 @@ MonoBehaviour:
   prefab: {fileID: 2614968672625327285, guid: d2f9c4fa48188b74b838170e7e2be2ee, type: 3}
   initialPoolSize: 10
   autoExpand: 1
+--- !u!114 &8564499973664967785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5243545444366961343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10cf5d167877a3c4f9e88a425e2dcbe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 10
+  invincibilityDuration: 0.5

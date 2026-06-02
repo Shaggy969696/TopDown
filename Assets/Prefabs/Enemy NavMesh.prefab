@@ -145,7 +145,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   detectionRadius: 10
-  attackRange: 1.2
+  chaseRange: 10
+  attackRange: 2
   contactDamage: 1
-  knockbackForce: 8
+  knockbackForce: 12
   attackCooldown: 1
