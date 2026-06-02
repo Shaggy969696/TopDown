@@ -36,7 +36,7 @@
                 {
                     "name": "Fire",
                     "type": "Button",
-                    "id": "3d1443e9-5b8f-4dac-90c4-8cbb2197103a",
+                    "id": "09d164cd-03a1-442d-85ec-20411dd0d678",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -123,7 +123,7 @@
                 },
                 {
                     "name": "",
-                    "id": "4e7608b2-f2aa-4472-a225-c456865a5050",
+                    "id": "a7e1f580-51d0-41a0-8cde-617340909c66",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
