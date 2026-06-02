@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
 
     private Camera mainCamera;
     private CharacterController characterController;
+    private PlayerAnima playerAnima;
     private Vector2 moveInput;
     private Vector3 lookTarget;
     private float verticalVelocity;
@@ -33,7 +34,14 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        // Usar GetComponentInChildren por si pusiste el script PlayerAnima en el objeto T_Pose en vez de en el principal
+        playerAnima = GetComponentInChildren<PlayerAnima>();
         mainCamera = Camera.main;
+
+        if (playerAnima == null)
+        {
+            Debug.LogWarning("PlayerController: No se encontró el script PlayerAnima ni en este objeto ni en sus hijos.");
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -68,6 +76,11 @@ public class PlayerController : MonoBehaviour
         ApplyGravity();
         MovePlayer();
         RotateTowardsMouse();
+
+        if (playerAnima != null)
+        {
+            playerAnima.SetRunning(moveInput.sqrMagnitude > 0.01f);
+        }
     }
 
     private void ApplyGravity()
