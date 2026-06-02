@@ -1,27 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Controls player movement and rotation for a 3D top-down shooter prototype.
-/// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    [Tooltip("Movement speed in units per second.")]
-    private float moveSpeed = 5f;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float rotationSpeed = 20f;
 
-    [SerializeField]
-    [Tooltip("Initial upward velocity applied when jumping.")]
-    private float jumpForce = 5f;
-
-    [SerializeField]
-    [Tooltip("Gravity applied manually because CharacterController does not apply physics gravity by itself.")]
-    private float gravity = -9.81f;
-
-    [SerializeField]
-    [Tooltip("Rotation interpolation speed.")]
-    private float rotationSpeed = 20f;
+    [Header("Knockback")]
+    [SerializeField] private float knockbackDecay = 8f;  // velocidad con que se frena el empuje
 
     private Camera mainCamera;
     private CharacterController characterController;
@@ -29,6 +18,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 lookTarget;
     private float verticalVelocity;
     private bool isJumping;
+
+    private Vector3 knockbackVelocity = Vector3.zero;
 
     private void Awake()
     {
@@ -53,7 +44,6 @@ public class PlayerController : MonoBehaviour
     public void MouseLook(InputAction.CallbackContext context)
     {
         Vector2 mouseScreenPosition = context.ReadValue<Vector2>();
-
         Ray ray = mainCamera.ScreenPointToRay(mouseScreenPosition);
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
 
@@ -61,6 +51,14 @@ public class PlayerController : MonoBehaviour
         {
             lookTarget = ray.GetPoint(enter);
         }
+    }
+
+    /// <summary>
+    /// Aplica un empuje al jugador en la dirección indicada.
+    /// </summary>
+    public void ApplyKnockback(Vector3 direction, float force)
+    {
+        knockbackVelocity = direction.normalized * force;
     }
 
     private void Update()
@@ -74,11 +72,7 @@ public class PlayerController : MonoBehaviour
     {
         if (characterController.isGrounded)
         {
-            if (!isJumping)
-            {
-                verticalVelocity = -1f;
-            }
-
+            if (!isJumping) verticalVelocity = -1f;
             isJumping = false;
         }
         else
@@ -89,8 +83,13 @@ public class PlayerController : MonoBehaviour
 
     private void MovePlayer()
     {
+        // Movimiento normal
         Vector3 movement = new Vector3(moveInput.x, 0f, moveInput.y) * moveSpeed;
         movement.y = verticalVelocity;
+
+        // Aplicar y atenuar knockback
+        movement += knockbackVelocity;
+        knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, knockbackDecay * Time.deltaTime);
 
         characterController.Move(movement * Time.deltaTime);
     }
@@ -100,10 +99,7 @@ public class PlayerController : MonoBehaviour
         Vector3 lookDirection = lookTarget - transform.position;
         lookDirection.y = 0f;
 
-        if (lookDirection.sqrMagnitude <= 0.001f)
-        {
-            return;
-        }
+        if (lookDirection.sqrMagnitude <= 0.001f) return;
 
         Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);

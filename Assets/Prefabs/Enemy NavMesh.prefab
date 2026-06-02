@@ -64,6 +64,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 6311705963918352362, guid: bbd32ba9f170ec94fa4102fd34be48fc, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8018401120966344112, guid: bbd32ba9f170ec94fa4102fd34be48fc, type: 3}
       propertyPath: m_TagString
       value: Enemy
@@ -83,10 +87,10 @@ PrefabInstance:
       addedObject: {fileID: 4292981759580425507}
     - targetCorrespondingSourceObject: {fileID: 8711294503442153945, guid: bbd32ba9f170ec94fa4102fd34be48fc, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5641663266299129269}
+      addedObject: {fileID: 3945464359641227507}
     - targetCorrespondingSourceObject: {fileID: 8711294503442153945, guid: bbd32ba9f170ec94fa4102fd34be48fc, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3945464359641227507}
+      addedObject: {fileID: 5336310159428011710}
   m_SourcePrefab: {fileID: 100100000, guid: bbd32ba9f170ec94fa4102fd34be48fc, type: 3}
 --- !u!1 &8688261850164380744 stripped
 GameObject:
@@ -115,19 +119,6 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &5641663266299129269
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8688261850164380744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e85eb18185e9a447b354cc0d682129e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyBase
-  detectionRadius: 10
 --- !u!114 &3945464359641227507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,3 +132,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 90
+--- !u!114 &5336310159428011710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8688261850164380744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e2b6fcacb4d3c446a63d86accfd2033, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
+  detectionRadius: 10
+  attackRange: 1.2
+  contactDamage: 1
+  knockbackForce: 8
+  attackCooldown: 1

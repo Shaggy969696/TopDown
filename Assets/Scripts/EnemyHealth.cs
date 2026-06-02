@@ -1,8 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Gestiona la vida del enemigo. Colocar en el root del prefab Enemy.
-/// </summary>
 public class EnemyHealth : MonoBehaviour, IDamageable
 {
     [Header("Health Settings")]
@@ -15,20 +12,22 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         currentHealth = maxHealth;
     }
 
+    // Se registra como enemigo activo al aparecer en escena
+    private void OnEnable()
+    {
+        UIManager.Instance?.RegisterEnemy();
+    }
+
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
-        Debug.Log($"[EnemyHealth] {gameObject.name} recibió {amount} daño. Vida: {currentHealth}/{maxHealth}");
-
-        if (currentHealth <= 0f)
-        {
-            Die();
-        }
+        if (currentHealth <= 0f) Die();
     }
 
     private void Die()
     {
         Debug.Log($"[EnemyHealth] {gameObject.name} eliminado.");
+        UIManager.Instance?.RegisterEnemyKill();
         gameObject.SetActive(false);
     }
 
