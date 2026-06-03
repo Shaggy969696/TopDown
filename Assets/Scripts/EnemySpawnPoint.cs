@@ -58,7 +58,11 @@ public class EnemySpawnPoint : MonoBehaviour
 
     /// <summary>
     /// Obtiene un enemigo del pool y lo posiciona en este spawn point.
-    /// </summary>
+    /// También aplica el multiplicador de detección si está configurado.
+    /// También aplica el multiplicador de detección si está configurado.
+    /// También aplica el multiplicador de detección si está configurado.
+    /// También aplica el multiplicador de detección si está configurado.
+        /// </summary>
     public GameObject Spawn()
     {
         EnsurePool();
