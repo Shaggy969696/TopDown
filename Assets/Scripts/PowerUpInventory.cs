@@ -1,9 +1,6 @@
 using UnityEngine;
 using static PowerUps;
 
-
-
-
 public enum TipoPowerUp { Fuego, Congelar }
 
 public class PowerUpInventory : MonoBehaviour
@@ -30,11 +27,16 @@ public class PowerUpInventory : MonoBehaviour
     {
         if (cooldownRestante > 0) cooldownRestante -= Time.deltaTime;
 
-        if (Input.GetKeyDown(KeyCode.Q) && powerUpActual != null && cooldownRestante <= 0)
+        if (Input.GetMouseButtonDown(0))
+        {
+            Debug.Log("Se hizo click. PowerUp actual: " + (powerUpActual != null ? powerUpActual.Nombre : "NINGUNO") + " | Cooldown restante: " + cooldownRestante);
+        }
+
+        if (Input.GetMouseButtonDown(0) && powerUpActual != null && cooldownRestante <= 0)
         {
             powerUpActual.Activar(transform);
             cooldownRestante = powerUpActual.Cooldown;
+            Debug.Log("Power-up activado: " + powerUpActual.Nombre);
         }
     }
 }
-
